@@ -1,0 +1,76 @@
+name: Template – Tests
+
+on:
+  workflow_call:
+    inputs:
+      project-type:
+        required: true
+        type: string # "angular" ou "spring-boot"
+
+jobs:
+  test:
+    name: Tests ${{ inputs.project-type }}
+    runs-on: ubuntu-latest
+    permissions:
+      checks: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # ── Spring Boot ──────────────────────────────────────────────
+      - name: Setup Java
+        if: inputs.project-type == 'spring-boot'
+        uses: actions/setup-java@v4
+        with:
+          java-version: "21"
+          distribution: temurin
+
+      - name: Cache Gradle
+        if: inputs.project-type == 'spring-boot'
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: java-${{ runner.os }}-${{ hashFiles('**/*.gradle*') }}
+          restore-keys: java-${{ runner.os }}-
+
+      - name: Run tests Spring Boot
+        if: inputs.project-type == 'spring-boot'
+        run: ./gradlew test
+
+      # ── Angular ──────────────────────────────────────────────────
+      - name: Setup Node.js
+        if: inputs.project-type == 'angular'
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Cache node_modules
+        if: inputs.project-type == 'angular'
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: angular-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: angular-${{ runner.os }}-
+
+      - name: Install dependencies
+        if: inputs.project-type == 'angular'
+        run: npm ci
+
+      - name: Run tests Angular
+        if: inputs.project-type == 'angular'
+        run: npm test
+        env:
+          CHROME_BIN: /usr/bin/google-chrome
+
+      # ── Rapport XML ──────────────────────────────────────────────
+      - name: Publish test report
+        uses: dorny/test-reporter@v1
+        if: always()
+        with:
+          name: Tests ${{ inputs.project-type }}
+          path: |
+            build/test-results/test/*.xml
+            reports/*.xml
+          reporter: java-junit
