@@ -69,6 +69,6 @@ jobs:
         with:
           name: Tests ${{ inputs.project-type }}
           path: |
-            build/test-results/test/*.xml
+            test-results/test/*.xml
             reports/*.xml
           reporter: java-junit
