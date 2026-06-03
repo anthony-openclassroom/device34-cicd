@@ -64,7 +64,7 @@ jobs:
 
       # ── Rapport XML ──────────────────────────────────────────────
       - name: Publish test report Spring Boot
-        uses: dorny/test-reporter@v1
+        uses: actions/upload-artifact@v4
         if: always() && inputs.project-type == 'spring-boot'
         with:
           name: Tests spring-boot
@@ -73,7 +73,7 @@ jobs:
           fail-on-empty: true
 
       - name: Publish test report Angular
-        uses: dorny/test-reporter@v1
+        uses: actions/upload-artifact@v4
         if: always() && inputs.project-type == 'angular'
         with:
           name: Tests angular
