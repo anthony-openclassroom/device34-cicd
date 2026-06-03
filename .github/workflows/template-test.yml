@@ -69,8 +69,6 @@ jobs:
         with:
           name: Tests spring-boot
           path: build/test-results/test/*.xml
-          reporter: java-junit
-          fail-on-empty: true
 
       - name: Publish test report Angular
         uses: actions/upload-artifact@v4
@@ -78,5 +76,3 @@ jobs:
         with:
           name: Tests angular
           path: reports/*.xml
-          reporter: java-junit
-          fail-on-empty: true
