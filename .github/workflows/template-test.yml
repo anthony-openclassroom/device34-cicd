@@ -63,12 +63,20 @@ jobs:
           CHROME_BIN: /usr/bin/google-chrome
 
       # ── Rapport XML ──────────────────────────────────────────────
-      - name: Publish test report
+      - name: Publish test report Spring Boot
         uses: dorny/test-reporter@v1
-        if: always()
+        if: always() && inputs.project-type == 'spring-boot'
         with:
-          name: Tests ${{ inputs.project-type }}
-          path: |
-            test-results/test/*.xml
-            reports/*.xml
+          name: Tests spring-boot
+          path: build/test-results/test/*.xml
           reporter: java-junit
+          fail-on-empty: true
+
+      - name: Publish test report Angular
+        uses: dorny/test-reporter@v1
+        if: always() && inputs.project-type == 'angular'
+        with:
+          name: Tests angular
+          path: reports/*.xml
+          reporter: java-junit
+          fail-on-empty: true
